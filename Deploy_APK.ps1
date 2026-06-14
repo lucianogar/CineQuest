@@ -37,12 +37,21 @@ if ($selection -eq "1" -or $selection -eq "5") {
     $timestamp = Get-Date -Format "yyyyMMdd-HHmm"
     $commitMsg = "msg: $timestamp"
 
+    # 3.1 Garantir configuracao do Remote do GitHub
+    $remoteCheck = git remote
+    if ($remoteCheck -notcontains "origin") {
+        Write-Host " -> Adicionando remote origin (lucianogar/CineQuest)..." -NoNewline
+        git remote add origin "https://github.com/lucianogar/CineQuest.git"
+        git branch -M main
+        Write-Host " OK" -ForegroundColor Green
+    }
+
     Write-Host " -> Adicionando arquivos..." -NoNewline
     git add .
     Write-Host " OK" -ForegroundColor Green
 
     Write-Host " -> Commitando ($commitMsg)..." -NoNewline
-    git commit -m "$commitMsg" | Out-Null
+    git commit -m "$commitMsg" 2>&1 | Out-Null
     if ($LASTEXITCODE -eq 0) {
         Write-Host " OK" -ForegroundColor Green
     } else {
@@ -50,12 +59,16 @@ if ($selection -eq "1" -or $selection -eq "5") {
     }
 
     Write-Host " -> Enviando para GitHub..." -NoNewline
-    git push | Out-Null
+    # Pega a branch atual para enviar de forma assertiva
+    $currentBranch = git branch --show-current
+    if ([string]::IsNullOrEmpty($currentBranch)) { $currentBranch = "main" }
+    
+    git push -u origin $currentBranch 2>&1 | Out-Null
     if ($LASTEXITCODE -eq 0) {
         Write-Host " OK" -ForegroundColor Green
     } else {
         Write-Host " ERRO!" -ForegroundColor Red
-        Write-Host " Verifique suas credenciais ou conexao."
+        Write-Host " Verifique suas credenciais, SSH/Token ou conexao."
         # Como e producao ou git-only, se falhar o push, paramos.
         exit
     }
