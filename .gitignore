@@ -41,3 +41,14 @@ app-example
 # generated native folders
 /ios
 /android
+
+# local env files and secret keys
+.env
+.env*.local
+
+# Agent files
+.agent
+.agent/
+
+# VS Code workspace
+*.code-workspace
