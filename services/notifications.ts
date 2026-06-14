@@ -1,6 +1,7 @@
-import { Platform } from 'react-native';
 import Constants from 'expo-constants';
+import { Platform } from 'react-native';
 import { supabase } from './supabase';
+
 
 /**
  * Helper para carregar o módulo de notificações de forma segura
